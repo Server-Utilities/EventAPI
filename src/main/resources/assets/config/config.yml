@@ -12,11 +12,13 @@ events:
         value: "give %player% nether_star"
       item:
         type: ITEM
-        value: "wither-shard"
+        value: "sharded-emerith"
       add:
         type: STORAGE
         value: "identifier:kill-wither;value:+1;"
 
 items:
-  wither-shard:
-    value: "material:clay_ball;amount:1;name:&0&k..&r &5&lWither Shard&r &0&k..;tags:shopItem:yes,serverItem:yes;"
+  looted-emerith:
+    value: "material:emerald;amount:%random1,%random3,5%%;name:&7&k..&r &5&lSharded &2&lEmerith&r &7&k..;tags:shopItem:yes,serverItem:yes;"
+  sharded-emerith:
+    value: "material:emerald;amount:1;name:&7&k..&r &5&lSharded &2&lEmerith&r &7&k..;tags:shopItem:yes,serverItem:yes;"

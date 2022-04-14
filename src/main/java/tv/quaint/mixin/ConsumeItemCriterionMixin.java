@@ -13,6 +13,6 @@ import tv.quaint.events.ItemEvents;
 public class ConsumeItemCriterionMixin {
     @Inject(method = "trigger", at = @At("HEAD"))
     private void onTrigger(ServerPlayerEntity player, ItemStack stack, CallbackInfo ci) {
-        ItemEvents.PLAYER_CONSUME_ITEM_EVENT.invoker().onConsume(player, stack);
+        ItemEvents.PLAYER_CONSUME_ITEM_EVENT.invoker().onConsume(player, stack, ci);
     }
 }

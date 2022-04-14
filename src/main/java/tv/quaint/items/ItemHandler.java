@@ -1,6 +1,7 @@
 package tv.quaint.items;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import tv.quaint.EventAPI;
 import tv.quaint.objects.events.rewards.ItemReward;
 import tv.quaint.objects.events.rewards.RewardHandler;
@@ -20,10 +21,12 @@ public class ItemHandler {
     }
 
     public static ItemReward asReward(ConfiguredItem item) {
+        if (item == null) return null;
         return RewardHandler.parseItemValue(item.rawValue);
     }
 
     public static ItemStack asStack(ItemReward reward) {
+        if (reward == null) return ItemUtils.newItem(Items.AIR, 1);
         return reward.asStack();
     }
 

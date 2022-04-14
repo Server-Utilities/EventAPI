@@ -10,6 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import tv.quaint.EventAPI;
+import tv.quaint.items.AmountJustification;
 import tv.quaint.items.ConfiguredItem;
 import tv.quaint.items.ItemHandler;
 import tv.quaint.objects.lists.SingleSet;
@@ -105,7 +106,12 @@ public class RewardHandler {
                     int amount = Integer.parseInt(varContent);
                     itemReward = itemReward.setAmount(amount);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    try {
+                        int amount = new AmountJustification(varContent).roll();
+                        itemReward = itemReward.setAmount(amount);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
             if (varIdentifier.equals("name")) {
