@@ -1,7 +1,7 @@
 package tv.quaint.objects.events;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
+import tv.quaint.objects.events.conditions.ConfigurableCondition;
 import tv.quaint.objects.events.rewards.ConfigurableReward;
 
 import java.util.ArrayList;
@@ -13,14 +13,22 @@ public class ConfigurableEvent {
     public EventType type;
     public String value;
     public boolean cancelReal;
+    public List<ConfigurableCondition> conditions;
     public List<ConfigurableReward> rewards;
 
     public ConfigurableEvent(String identifier, EventType type, String value, boolean cancelReal) {
         this.identifier = identifier;
         this.type = type;
         this.cancelReal = cancelReal;
+        this.conditions = new ArrayList<>();
         this.rewards = new ArrayList<>();
         this.value = value;
+    }
+
+    public ConfigurableEvent addConditions(ConfigurableCondition... conditions) {
+        this.conditions.addAll(Arrays.asList(conditions));
+
+        return this;
     }
 
     public ConfigurableEvent addRewards(ConfigurableReward... rewards) {

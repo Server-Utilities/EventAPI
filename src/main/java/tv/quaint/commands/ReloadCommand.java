@@ -24,7 +24,7 @@ public class ReloadCommand implements Command<ServerCommandSource> {
     public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
 
-        EventAPI.CONFIG.reloadConfig();
+        EventAPI.CONFIG.parseConfig();
         player.sendMessage(MutableText.Serializer.fromJson(CommandMessages.RELOAD_CONFIG_RELOADED.parse()), false);
 
         EventAPI.CONFIG.reloadStorage();
@@ -34,7 +34,10 @@ public class ReloadCommand implements Command<ServerCommandSource> {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(CommandManager.literal("eventapi:reload").executes(this));
+        dispatcher.register(CommandManager
+                .literal("eventapi:reload")
+                .requires(source -> source.hasPermissionLevel(4))
+                .executes(this));
         info("Registered!");
     }
 

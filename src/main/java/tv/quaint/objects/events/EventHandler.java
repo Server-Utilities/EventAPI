@@ -4,6 +4,8 @@ import com.google.re2j.Matcher;
 import net.minecraft.entity.player.PlayerEntity;
 import tv.quaint.EventAPI;
 import tv.quaint.items.ParsedHold;
+import tv.quaint.objects.events.conditions.ConditionType;
+import tv.quaint.objects.events.conditions.ConfigurableCondition;
 import tv.quaint.utils.MainUtils;
 
 import java.util.ArrayList;
@@ -44,8 +46,40 @@ public class EventHandler {
 
     public static void handleEvents(PlayerEntity player, List<ConfigurableEvent> toHandle) {
         for (ConfigurableEvent event : toHandle) {
+            if (! conditionsPassed(player, event.conditions)) continue;
             event.rewardPlayer(player);
         }
+    }
+
+    public static boolean conditionsPassed(PlayerEntity player, List<ConfigurableCondition> conditions) {
+        for (ConfigurableCondition condition : conditions) {
+            if (condition.type.equals(ConditionType.SHIFTING)) {
+                if (player.isSneaking() != Boolean.parseBoolean(condition.unparsedValue)) return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static ConfigurableCondition parseCondition(String from) {
+        Matcher matcher = MainUtils.setupMatcher("((.*?)[:](.*?)[;])", from);
+
+        ConfigurableCondition condition = new ConfigurableCondition();
+        while (matcher.find()) {
+            String unparsed = matcher.group(1);
+            String varIdentifier = matcher.group(2);
+            String varContent = matcher.group(3);
+
+            if (varIdentifier.equals("type")) {
+                if (varContent.equalsIgnoreCase("shifting")) condition = condition.setType(ConditionType.SHIFTING);
+                else condition = condition.setType(ConditionType.UNDEFINED);
+            }
+            if (varIdentifier.equals("value")) {
+                condition = condition.setUnparsedValue(varContent);
+            }
+        }
+
+        return condition;
     }
 
     public static String parseKillEntity(String from) {

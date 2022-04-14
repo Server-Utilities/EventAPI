@@ -3,6 +3,9 @@ events:
     type: KILL
     value: "entity:wither;"
     cancel-real: true
+    conditions:
+      1:
+        value: "type:SHIFTING;value:true;"
     rewards:
       give:
         type: COMMAND

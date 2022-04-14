@@ -3,12 +3,13 @@ package tv.quaint.config;
 import de.leonhard.storage.Config;
 import de.leonhard.storage.sections.FlatFileSection;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 import tv.quaint.EventAPI;
+import tv.quaint.events.SelfEvents;
 import tv.quaint.items.ConfiguredItem;
 import tv.quaint.objects.events.ConfigurableEvent;
 import tv.quaint.objects.events.EventHandler;
 import tv.quaint.objects.events.EventType;
+import tv.quaint.objects.events.conditions.ConfigurableCondition;
 import tv.quaint.objects.events.rewards.ConfigurableReward;
 import tv.quaint.objects.events.rewards.RewardType;
 import tv.quaint.utils.MainUtils;
@@ -49,6 +50,8 @@ public class ConfigHandler {
     }
 
     public void parseConfig() {
+        reloadConfig();
+
         EventHandler.flushEvents();
 
         for (String key : config.singleLayerKeySet("events")) {
@@ -60,7 +63,21 @@ public class ConfigHandler {
 
             ConfigurableEvent event = new ConfigurableEvent(key, type, value, cancelReal);
 
-            List<ConfigurableReward> toAdd = new ArrayList<>();
+            List<ConfigurableCondition> conditionsToAdd = new ArrayList<>();
+
+            if (section.contains("conditions")) {
+                for (String k : section.singleLayerKeySet("conditions")) {
+                    ConfigurableCondition condition = EventHandler.parseCondition(section.getString("conditions." + k + ".value"));
+
+                    EventAPI.LOGGER.info("Loaded ConfigurableCondition: < identifier: '" + k + "', type: '" + condition.type + "', value: '" + condition.unparsedValue + "' >");
+
+                    conditionsToAdd.add(condition);
+                }
+            }
+
+            event = event.addConditions(conditionsToAdd.toArray(new ConfigurableCondition[0]));
+
+            List<ConfigurableReward> rewardsToAdd = new ArrayList<>();
 
             for (String k : section.singleLayerKeySet("rewards")) {
                 FlatFileSection s = config.getSection("events." + key + ".rewards." + k);
@@ -70,12 +87,12 @@ public class ConfigHandler {
 
                 ConfigurableReward reward = new ConfigurableReward(k, t, v);
 
-                EventAPI.LOGGER.info("Loaded ConfiguredReward: < identifier: '" + k + "', type: '" + t.name() + "', value: '" + v + "' >");
+                EventAPI.LOGGER.info("Loaded ConfigurableReward: < identifier: '" + k + "', type: '" + t.name() + "', value: '" + v + "' >");
 
-                toAdd.add(reward);
+                rewardsToAdd.add(reward);
             }
 
-            event = event.addRewards(toAdd.toArray(new ConfigurableReward[0]));
+            event = event.addRewards(rewardsToAdd.toArray(new ConfigurableReward[0]));
 
             EventHandler.registerConfiguredEvent(event);
         }
@@ -87,7 +104,10 @@ public class ConfigHandler {
     }
 
     public void setInStorage(String identifier, PlayerEntity player, int amount) {
+        SelfEvents.STORAGE_SET_EVENT.invoker().onSet(identifier, player, getFromStorage(identifier, player), amount);
+
         storage.set(identifier + "." + player.getUuidAsString(), amount);
+
     }
 
     public void addToStorage(String identifier, PlayerEntity player, int amount) {
@@ -114,7 +134,7 @@ public class ConfigHandler {
         FlatFileSection section = config.getSection("items");
 
         for (String key : section.singleLayerKeySet()) {
-            items.add(new ConfiguredItem(key, section.getString(key)));
+            items.add(new ConfiguredItem(key, section.getString(key + ".value")));
         }
 
         return items;

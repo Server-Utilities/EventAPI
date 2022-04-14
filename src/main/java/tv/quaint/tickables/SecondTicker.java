@@ -4,6 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import tv.quaint.events.ItemEvents;
+import tv.quaint.events.SelfEvents;
 import tv.quaint.utils.MainUtils;
 
 public class SecondTicker {
@@ -26,6 +27,8 @@ public class SecondTicker {
     }
 
     public void done() {
+        SelfEvents.SECOND_TICK_EVENT.invoker().onTick();
+
         for (ServerPlayerEntity player : MainUtils.getOnlinePlayers()) {
             ItemStack main = player.getMainHandStack();
             ItemStack off = player.getOffHandStack();

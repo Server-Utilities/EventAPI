@@ -53,9 +53,9 @@ public class ItemUtils {
     public static String getType(ItemStack stack) {
         String[] split = stack.getTranslationKey().split(":", 2);
         if (split.length < 2) {
-            return split[0];
+            return split[0].substring(split[0].lastIndexOf(".") + 1);
         } else {
-            return split[1];
+            return split[1].substring(split[1].lastIndexOf(".") + 1);
         }
     }
 
