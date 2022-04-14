@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import tv.quaint.events.EntityEvents;
 
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin {
@@ -24,7 +25,7 @@ public class PlayerEntityMixin {
     @Inject(method = "onKilledOther", at = @At("HEAD"))
     private void onKilled(ServerWorld world, LivingEntity other, CallbackInfo ci) {
         if (other.getPrimeAdversary() instanceof PlayerEntity player) {
-            KillEvents.KILL_ENTITY_EVENT.invoker().onKill(player, other);
+            EntityEvents.KILL_ENTITY_EVENT.invoker().onKill(player, other);
         }
     }
 
