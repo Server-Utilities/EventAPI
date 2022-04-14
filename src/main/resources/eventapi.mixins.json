@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "tv.quaint.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "ConsumeItemCriterionMixin",
+    "EntityMixin",
+    "PlayerEntityMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,19 @@
+events:
+  kill-wither:
+    type: KILL
+    value: "entity:wither;"
+    cancel-real: true
+    rewards:
+      give:
+        type: COMMAND
+        value: "give %player% nether_star"
+      item:
+        type: ITEM
+        value: "wither-shard"
+      add:
+        type: STORAGE
+        value: "identifier:kill-wither;value:+1;"
+
+items:
+  wither-shard:
+    value: "material:clay_ball;amount:1;name:&0&k..&r &5&lWither Shard&r &0&k..;tags:shopItem:yes,serverItem:yes;"
