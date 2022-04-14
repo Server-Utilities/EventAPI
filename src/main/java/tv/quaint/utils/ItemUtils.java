@@ -5,6 +5,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.visitor.NbtTextFormatter;
+import net.minecraft.text.NbtText;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +21,21 @@ public class ItemUtils {
 
     public static ItemStack setName(ItemStack stack, String name) {
         stack.setCustomName(TextUtils.newText(name));
+        return stack;
+    }
+
+    public static ItemStack setLore(ItemStack stack, List<String> lore) {
+        NbtCompound l = stack.getOrCreateNbt();
+        NbtCompound tag = l.getCompound("display");
+        NbtList list = tag.getList("Lore", NbtString.STRING_TYPE);
+        list.clear();
+
+        for (String st : lore) {
+            list.add(NbtString.of(st));
+        }
+        tag.put("Lore", list);
+        stack.setNbt(l);
+
         return stack;
     }
 
@@ -93,48 +112,35 @@ public class ItemUtils {
 
         return similar;
     }
-
-    public static boolean hasEnoughToRemoveOf(PlayerEntity player, ItemStack stack, int amount) {
-        HashMap<Integer, ItemStack> similar = getSimilarInInventory(player, stack);
-
-        int has = 0;
-        for (int key : similar.keySet()) {
-            ItemStack s = similar.get(key);
-
-            has += s.getCount();
-        }
-
-        return has >= amount;
-    }
-    
-    public static boolean removeAmountOf(PlayerEntity player, ItemStack stack, int amount) {
-        if (! hasEnoughToRemoveOf(player, stack, amount)) return false;
-
-        HashMap<Integer, ItemStack> similar = getSimilarInInventory(player, stack);
-        
-        for (int key : similar.keySet()) {
-            ItemStack s = similar.get(key);
-
-            if (s.getCount() > amount) {
-                while (amount > 0) {
-                    amount--;
-                    removeOneOf(s, key, player);
-                }
-            } else {
-                while (s.getCount() > 0 && ! getType(s).equals("air")) {
-                    amount--;
-                    removeOneOf(s, key, player);
-                }
-            }
-        }
-
-        return true;
-    }
     
     public static void removeOneOf(ItemStack stack, int slot, PlayerEntity player) {
         if (getType(stack).equals("air")) return;
         if (stack.getCount() <= 1) player.getInventory().setStack(slot, newItem(Items.AIR, 1));
 
         stack.setCount(stack.getCount() - 1);
+    }
+
+    public static boolean hasEnoughToRemoveOf(PlayerEntity player, ItemStack stack, int amount) {
+        ItemStack inv = player.getMainHandStack();
+        if (! isSameAnyAmount(inv, stack)) return false;
+
+        return inv.getCount() >= amount;
+    }
+
+    public static boolean removeAmountOf(PlayerEntity player, ItemStack stack, int amount) {
+        if (amount - stack.getCount() != 0) return false;
+        if (stack != player.getMainHandStack()) return false;
+
+        removeItemInHand(player);
+        return true;
+    }
+
+    public static void removeItemInHand(PlayerEntity player) {
+//        player.getInventory().setStack(player.getInventory().selectedSlot, newItem(Items.AIR));
+        player.getInventory().removeStack(player.getInventory().selectedSlot);
+    }
+
+    public static boolean isShopItem(ItemStack stack) {
+        return hasStringedTagValue(stack, "shopItem", "yes");
     }
 }

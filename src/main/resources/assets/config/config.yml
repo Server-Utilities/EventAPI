@@ -6,6 +6,14 @@ events:
     conditions:
       1:
         value: "type:SHIFTING;value:true;"
+      2:
+        value: "type:BLOCK_EQUALS;value:true,0,-1,0,bedrock;"
+      3:
+        value: "type:ITEM_COUNT;value:1,@;"
+      4:
+        value: "type:ITEM_COUNT;value:1,0;"
+      5:
+        value: "type:ITEM_TAG;value:shopItem,true;"
     rewards:
       give:
         type: COMMAND
@@ -19,4 +27,4 @@ events:
 
 items:
   wither-shard:
-    value: "material:clay_ball;amount:1;name:&0&k..&r &5&lWither Shard&r &0&k..;tags:shopItem:yes,serverItem:yes;"
+    value: "material:emerald;amount:%random1,%random3,5%%;name:&7&k..&r &5&lSharded &2&lEmerith&r &7&k..;lore:<{\"text\":\"\\u00A7bUseful for getting more\"}>,<{\"text\":\"\\u00A77RTPs \\u00A7band \\u00A77Claim Blocks\\u00A78!\"}>;tags:shopItem:yes,serverItem:yes;"
